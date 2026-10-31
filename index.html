@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Senior Connect - Mentor Match</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        #quiz-container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .question-block {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option-label {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            display: block;
+        }
+        .option-label:hover { background: #e9ecef; }
+        
+        #submit-quiz {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="quiz-container">
+        <h2 style="text-align: center;">Find Your Perfect Mentor Match</h2>
+        <p style="text-align: center; color: #666;">Answer 10 quick questions to see which seniors match your personality!</p>
+        <hr>
+        
+        <form id="personalityQuiz">
+            <div id="question-area">
+                </div>
+            <button type="button" id="submit-quiz" onclick="calculateResult()">Find My Match</button>
+        </form>
+    </div>
+
+    <script>
+        // 10 Personality Questions
+        const quizData = [
+            { q: "How do you prefer to start a new project?", options: { "Type A": "Making a detailed roadmap", "Type B": "Diving straight into code", "Type C": "Drawing the UI/Design first", "Type D": "Reading all documentation" } },
+            { q: "What's your biggest motivation in college?", options: { "Type A": "Getting a high-paying job", "Type B": "Building the next big startup", "Type C": "Creative expression/Design", "Type D": "Mastering the technology" } },
+            { q: "In a group project, what is your role?", options: { "Type A": "Project Lead/Manager", "Type B": "The Fast Coder", "Type C": "UX/UI Specialist", "Type D": "System Architect" } },
+            { q: "How do you handle a difficult bug?", options: { "Type A": "Search step-by-step logic", "Type B": "Try 10 different things quickly", "Type C": "Ask a friend to brainstorm", "Type D": "Analyze the core error log" } },
+            { q: "What kind of workspace do you like?", options: { "Type A": "Neat and professional", "Type B": "A bit messy but busy", "Type C": "Colorful and aesthetic", "Type D": "Dark mode and minimal" } },
+            { q: "How do you spend your free time?", options: { "Type A": "Learning a new skill", "Type B": "Working on a side-hustle", "Type C": "Gaming or Designing", "Type D": "Browsing Tech forums" } },
+            { q: "Which communication style do you prefer?", options: { "Type A": "Official Emails/Meetings", "Type B": "Quick WhatsApp/DMs", "Type C": "Long Voice Calls", "Type D": "Detailed documentation" } },
+            { q: "Your approach to deadlines is...", options: { "Type A": "Finish 2 days before", "Type B": "Work best under pressure", "Type C": "Focus on perfection, not time", "Type D": "Consistent daily progress" } },
+            { q: "What attracts you most in tech?", options: { "Type A": "Management and Scale", "Type B": "Rapid Innovation", "Type C": "User Experience/Feel", "Type D": "Complex Algorithms" } },
+            { q: "What do you expect from your mentor?", options: { "Type A": "A clear career roadmap", "Type B": "Industry hacks and tips", "Type C": "Motivation and Creativity", "Type D": "Deep technical guidance" } }
+        ];
+
+        const questionArea = document.getElementById('question-area');
+
+        // Questions render karne ka loop
+        quizData.forEach((item, index) => {
+            let qDiv = document.createElement('div');
+            qDiv.className = 'question-block';
+            qDiv.innerHTML = `<p><strong>${index + 1}. ${item.q}</strong></p><div class="options-grid"></div>`;
+            
+            Object.entries(item.options).forEach(([type, text]) => {
+                qDiv.querySelector('.options-grid').innerHTML += `
+                    <label class="option-label">
+                        <input type="radio" name="q${index}" value="${type}" required> ${text}
+                    </label>
+                `;
+            });
+            questionArea.appendChild(qDiv);
+        });
+
+        function calculateResult() {
+            const form = document.getElementById('personalityQuiz');
+            const formData = new FormData(form);
+            let scores = { "Type A": 0, "Type B": 0, "Type C": 0, "Type D": 0 };
+            let answeredCount = 0;
+
+            for (let value of formData.values()) {
+                scores[value]++;
+                answeredCount++;
+            }
+
+            if (answeredCount < 10) {
+                alert("Please answer all 10 questions!");
+                return;
+            }
+
+            // Winning personality type nikalna
+            let winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+            
+            // Result save karna aur redirect karna
+            localStorage.setItem('userPersonality', winner);
+            window.location.href = "index.html?quizDone=true";
+        }
+    </script>
+</body>
+</html>
